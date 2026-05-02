@@ -2,7 +2,7 @@
 name = "agent_crewai"
 version = "0.1.0"
 description = "CV Screening Agent using CrewAI"
-authors = [{ name = "Your Name", email = "you@example.com" }]
+authors = [{ name = "Musharraf Hamraz", email = "musharrafhamraz@.com" }]
 requires-python = ">=3.10,<3.14"
 dependencies = [
     "crewai[tools]==1.7.2",
