@@ -1,0 +1,120 @@
+extraction_task:
+  description: >
+    Extract structured information from the provided CV and job description.
+    
+    Analyze the following:
+    
+    CV:
+    {cv_text}
+    
+    JOB DESCRIPTION:
+    {job_description}
+    
+    Extract and organize the following information:
+    
+    CANDIDATE PROFILE:
+    - All technical skills (programming languages, frameworks, tools, platforms)
+    - Total years of professional experience
+    - Education background (degrees, institutions, graduation years)
+    - Previous roles and companies
+    - Notable projects or achievements
+    
+    JOB REQUIREMENTS:
+    - Must-have skills (required/essential)
+    - Nice-to-have skills (preferred/bonus)
+    - Required years of experience
+    - Key role responsibilities
+    - Any specific certifications or qualifications mentioned
+    
+    Provide a clear, well-structured summary that will be used for candidate evaluation.
+  expected_output: >
+    A comprehensive structured summary with two main sections:
+    1. CANDIDATE section with skills, experience, education, and roles
+    2. JOB REQUIREMENTS section with must-have skills, nice-to-have skills,
+       experience requirements, and responsibilities.
+    The output should be clear, organized, and ready for evaluation.
+  agent: extractor_agent
+
+evaluation_task:
+  description: >
+    Based on the extracted candidate and job requirement information from the previous task,
+    perform a thorough evaluation of the candidate's fit for the role.
+    
+    Analyze:
+    - Skill alignment (which required skills does the candidate have/lack?)
+    - Experience level match (overqualified, good match, or underqualified?)
+    - Education and background fit
+    - Potential strengths and concerns
+    
+    Provide an objective score from 0-100 where:
+    - 0-39: Not a fit (reject)
+    - 40-59: Possible fit (maybe)
+    - 60-79: Good fit (yes)
+    - 80-100: Excellent fit (strong yes)
+    
+    Return your evaluation as a structured JSON object with:
+    - overall_score: integer from 0-100
+    - verdict: "Strong Yes", "Yes", "Maybe", or "No"
+    - matched_skills: list of skills the candidate has that match requirements
+    - missing_skills: list of required skills the candidate lacks
+    - strengths: list of key strengths (2-4 items)
+    - red_flags: list of concerns or red flags (empty list if none)
+    - experience_match: "Overqualified", "Good Match", or "Underqualified"
+    - interview_topics: list of 3-5 suggested interview questions or topics
+    
+    Be objective, thorough, and fair in your assessment.
+  expected_output: >
+    A structured JSON evaluation containing overall_score, verdict, matched_skills,
+    missing_skills, strengths, red_flags, experience_match, and interview_topics.
+    The evaluation should be data-driven, objective, and provide clear reasoning
+    for the score and verdict.
+  agent: evaluator_agent
+  context:
+    - extraction_task
+
+reporting_task:
+  description: >
+    Generate a professional, comprehensive hiring recommendation report based on
+    the candidate extraction and evaluation from previous tasks.
+    
+    The report must include the following sections:
+    
+    1. EXECUTIVE SUMMARY
+       - Lead with the verdict (Strong Yes/Yes/Maybe/No)
+       - 2-3 sentence overview of the candidate's fit
+       - Overall score prominently displayed
+    
+    2. SKILL MATCH ANALYSIS
+       - Matched skills with brief context
+       - Missing skills and their importance
+       - Overall technical alignment assessment
+    
+    3. KEY STRENGTHS
+       - 3-5 bullet points highlighting candidate's strongest attributes
+       - Specific examples from their background
+    
+    4. CONCERNS / GAPS
+       - Any red flags or concerns identified
+       - Skills gaps and their potential impact
+       - If none, state "No significant concerns identified"
+    
+    5. SUGGESTED INTERVIEW QUESTIONS
+       - 3-5 specific questions or topics to explore
+       - Focus on validating strengths and probing gaps
+    
+    6. FINAL RECOMMENDATION
+       - Clear hire/no-hire recommendation
+       - Next steps (e.g., "Proceed to technical interview")
+       - Any conditions or considerations
+    
+    Write in a professional, direct tone. Be specific and actionable.
+    Use the evaluation data to support your recommendations.
+  expected_output: >
+    A well-structured, professional hiring recommendation report in markdown format
+    with clear sections, bullet points, and actionable insights. The report should
+    be executive-ready, concise yet comprehensive, and provide clear guidance on
+    whether to proceed with the candidate.
+  agent: reporter_agent
+  context:
+    - extraction_task
+    - evaluation_task
